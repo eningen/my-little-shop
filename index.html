@@ -139,27 +139,55 @@ function draw(){
  poly([[-roomHalf,0,roomFront],[-roomHalf,0,roomBack],[-roomHalf,3.3,roomBack],[-roomHalf,3.3,roomFront]],wp.side);
  poly([[roomHalf,0,roomFront],[roomHalf,0,roomBack],[roomHalf,3.3,roomBack],[roomHalf,3.3,roomFront]],wp.side);
  poly([[-roomHalf,3.3,roomFront],[roomHalf,3.3,roomFront],[roomHalf,3.3,roomBack],[-roomHalf,3.3,roomBack]],wp.ceil);
- // Floor pattern changes independently from the wallpaper.
+ // Floor pattern and wall/ceiling textures all follow the expanded room dimensions.
  const grout=floorTheme==='marble'?'#ffffffaa':floorTheme==='concrete'?'#45443d88':floorTheme==='modern'?'#f5ffffaa':floorTheme==='wood'?'#6e432c':'#e9e1c5aa';
- if(floorTheme==='checker'){for(let x=-5;x<5;x+=1.3)for(let z=-1;z<8;z+=1.3){if((Math.round((x+5)/1.3)+Math.round((z+1)/1.3))%2===0)poly([[x,.012,z],[x+1.3,.012,z],[x+1.3,.012,z+1.3],[x,.012,z+1.3]],'#dcd3b8');}}
- else if(floorTheme==='wood'){for(let z=-1;z<=8;z+=.42)line3([-5,.01,z],[5,.01,z],grout,1.2);for(let z=-1;z<8;z+=.84)for(let x=-5;x<=5;x+=2.2)line3([x,.012,z],[x,.012,z+.42],'#5b38265c',1);}
- else {for(let z=-1;z<=8;z+=.65)line3([-5,.006,z],[5,.006,z],grout,1);for(let x=-5;x<=5;x+=.65)line3([x,.008,-1],[x,.008,8],grout,1);}
- // Wall texture and matching ceiling accents.
- if(wallTheme==='luxury'){for(let x=-4.8;x<=4.8;x+=1.2){line3([x,0,7.985],[x,3.15,7.985],wp.trim,2);line3([x,3.28,-1.3],[x,3.28,7.8],wp.trim,1);}line3([-5,2.9,7.98],[5,2.9,7.98],wp.trim,2);}
- else if(wallTheme==='vintage'){for(let y=.45;y<3.1;y+=.65)line3([-4.95,y,7.985],[4.95,y,7.985],'#76684f88',1);for(let x=-4.8;x<5;x+=1.1)line3([x,.1,7.985],[x,3.1,7.985],'#76684f55',1);}
- else if(wallTheme==='country'){for(let y=.45;y<3.1;y+=.55)line3([-4.95,y,7.985],[4.95,y,7.985],'#fff9e555',1);for(let x=-4.8;x<5;x+=1.6)line3([x,.25,7.985],[x,3.1,7.985],'#8b9a7830',1);}
- else if(wallTheme==='modern'){for(let x=-4.8;x<5;x+=1.25)line3([x,0,7.985],[x,3.15,7.985],'#9fb7bd66',1);line3([-5,2.85,7.985],[5,2.85,7.985],'#8bb5c1',2);}
- else if(wallTheme==='wood'){for(let y=.25;y<3.2;y+=.28)line3([-4.95,y,7.985],[4.95,y,7.985],'#59382077',1);for(let x=-4.8;x<5;x+=1.05)line3([x,.1,7.985],[x,3.2,7.985],'#e0b17c66',1);for(let z=-1;z<8;z+=1.1)line3([-4.98,3.28,z],[4.98,3.28,z],wp.trim,1);}
-
- // Ceiling texture follows the selected wallpaper family.
+ const tile=1.3;
+ if(floorTheme==='checker'){
+   for(let x=-roomHalf;x<roomHalf;x+=tile)for(let z=roomFront;z<roomBack;z+=tile){
+     if((Math.floor((x+roomHalf)/tile)+Math.floor((z-roomFront)/tile))%2===0)
+       poly([[x,.012,z],[Math.min(x+tile,roomHalf),.012,z],[Math.min(x+tile,roomHalf),.012,Math.min(z+tile,roomBack)],[x,.012,Math.min(z+tile,roomBack)]],'#dcd3b8');
+   }
+ } else if(floorTheme==='wood'){
+   for(let z=roomFront;z<=roomBack;z+=.42)line3([-roomHalf,.01,z],[roomHalf,.01,z],grout,1.2);
+   for(let z=roomFront;z<roomBack;z+=.84)for(let x=-roomHalf;x<=roomHalf;x+=2.2)line3([x,.012,z],[x,.012,Math.min(z+.42,roomBack)],'#5b38265c',1);
+ } else {
+   for(let z=roomFront;z<=roomBack;z+=.65)line3([-roomHalf,.006,z],[roomHalf,.006,z],grout,1);
+   for(let x=-roomHalf;x<=roomHalf;x+=.65)line3([x,.008,roomFront],[x,.008,roomBack],grout,1);
+ }
+ // Wallpaper details are drawn on the actual back and side walls, not the old fixed-size room.
+ const rearZ=roomBack-.015, leftX=-roomHalf+.015, rightX=roomHalf-.015;
+ const wallXs=[]; for(let x=-roomHalf+.2;x<roomHalf;x+=wallTheme==='luxury'?1.2:wallTheme==='modern'?1.25:1.5)wallXs.push(x);
+ if(wallTheme==='luxury'){
+   for(const x of wallXs){line3([x,0,rearZ],[x,3.15,rearZ],wp.trim,2);line3([x,3.28,roomFront+.2],[x,3.28,roomBack-.2],wp.trim,1);}
+   line3([-roomHalf,2.9,rearZ],[roomHalf,2.9,rearZ],wp.trim,2);
+ } else if(wallTheme==='vintage'){
+   for(let y=.45;y<3.1;y+=.65)line3([-roomHalf+.05,y,rearZ],[roomHalf-.05,y,rearZ],'#76684f88',1);
+   for(const x of wallXs)line3([x,.1,rearZ],[x,3.1,rearZ],'#76684f55',1);
+ } else if(wallTheme==='country'){
+   for(let y=.45;y<3.1;y+=.55)line3([-roomHalf+.05,y,rearZ],[roomHalf-.05,y,rearZ],'#fff9e555',1);
+   for(const x of wallXs)line3([x,.25,rearZ],[x,3.1,rearZ],'#8b9a7830',1);
+ } else if(wallTheme==='modern'){
+   for(const x of wallXs)line3([x,0,rearZ],[x,3.15,rearZ],'#9fb7bd66',1);
+   line3([-roomHalf,2.85,rearZ],[roomHalf,2.85,rearZ],'#8bb5c1',2);
+ } else if(wallTheme==='wood'){
+   for(let y=.25;y<3.2;y+=.28)line3([-roomHalf+.05,y,rearZ],[roomHalf-.05,y,rearZ],'#59382077',1);
+   for(const x of wallXs)line3([x,.1,rearZ],[x,3.2,rearZ],'#e0b17c66',1);
+   for(let z=roomFront;z<roomBack;z+=1.1)line3([leftX,3.28,z],[rightX,3.28,z],wp.trim,1);
+ }
+ // Add subtle panel seams to both side walls so the wallpaper visually reaches each new edge.
+ for(const sideX of [leftX,rightX]){
+   for(let y=.45;y<3.1;y+=wallTheme==='wood'?.28:.75)line3([sideX,y,roomFront+.05],[sideX,y,roomBack-.05],wallTheme==='luxury'?wp.trim:wallTheme==='wood'?'#59382077':'#ffffff22',1);
+   for(let z=roomFront+.3;z<roomBack;z+=wallTheme==='luxury'?1.2:1.6)line3([sideX,.08,z],[sideX,3.2,z],wallTheme==='luxury'?wp.trim:wallTheme==='modern'?'#9fb7bd66':'#ffffff22',1);
+ }
+ // Ceiling seams stretch across the complete enlarged ceiling.
  const ceilingLine=wallTheme==='luxury'?'#c9a35e88':wallTheme==='vintage'?'#76684f66':wallTheme==='country'?'#fff9e555':wallTheme==='modern'?'#9fb7bd77':'#59382077';
- for(let x=-4.8;x<=4.8;x+=wallTheme==='luxury'?1.2:1.6)line3([x,3.285,-1.3],[x,3.285,7.8],ceilingLine,wallTheme==='luxury'?2:1);
- if(wallTheme==='vintage'||wallTheme==='country'||wallTheme==='modern')for(let z=-1;z<=8;z+=wallTheme==='modern'?1.8:1.25)line3([-4.9,3.285,z],[4.9,3.285,z],ceilingLine,1);
+ for(let x=-roomHalf+.2;x<roomHalf;x+=wallTheme==='luxury'?1.2:1.6)line3([x,3.285,roomFront+.15],[x,3.285,roomBack-.15],ceilingLine,wallTheme==='luxury'?2:1);
+ if(wallTheme==='vintage'||wallTheme==='country'||wallTheme==='modern')for(let z=roomFront+.2;z<roomBack;z+=wallTheme==='modern'?1.8:1.25)line3([-roomHalf+.1,3.285,z],[roomHalf-.1,3.285,z],ceilingLine,1);
  // Rear wall panels, skirting and timber ceiling beams.
  // The shop name sign is mounted on the right-hand side wall, away from the rear shelves.
- poly([[4.94,2.12,2.15],[4.94,2.12,5.35],[4.94,3.06,5.35],[4.94,3.06,2.15]],'#f5e6c6','#fff9e9',2);
- poly([[4.91,2.27,2.28],[4.91,2.27,5.22],[4.91,2.91,5.22],[4.91,2.91,2.28]],signColor,'#fff4d7',1);
- const sign=proj(4.88,2.59,3.75);if(sign){ctx.save();ctx.fillStyle=['#e8c85c','#e9eee8'].includes(signColor)?'#24352e':'#fffaf0';ctx.textAlign='center';ctx.textBaseline='middle';let label=shopName||'MY SHOP';let fontSize=Math.max(8,Math.min(24,sign.sc*.22));ctx.font=`900 ${fontSize}px system-ui`;while(ctx.measureText(label).width>Math.max(10,sign.sc*2.65)&&fontSize>7){fontSize-=1;ctx.font=`900 ${fontSize}px system-ui`;}ctx.translate(sign.x,sign.y);ctx.fillText(label,0,0,Math.max(10,sign.sc*2.65));ctx.restore()}
+ const signX=roomHalf-.06, signZ=roomFront+(roomBack-roomFront)*.52;\n poly([[signX,2.12,signZ-1.6],[signX,2.12,signZ+1.6],[signX,3.06,signZ+1.6],[signX,3.06,signZ-1.6]],'#f5e6c6','#fff9e9',2);
+ poly([[signX-.03,2.27,signZ-1.47],[signX-.03,2.27,signZ+1.47],[signX-.03,2.91,signZ+1.47],[signX-.03,2.91,signZ-1.47]],signColor,'#fff4d7',1);
+ const sign=proj(signX-.06,2.59,signZ);if(sign){ctx.save();ctx.fillStyle=['#e8c85c','#e9eee8'].includes(signColor)?'#24352e':'#fffaf0';ctx.textAlign='center';ctx.textBaseline='middle';let label=shopName||'MY SHOP';let fontSize=Math.max(8,Math.min(24,sign.sc*.22));ctx.font=`900 ${fontSize}px system-ui`;while(ctx.measureText(label).width>Math.max(10,sign.sc*2.65)&&fontSize>7){fontSize-=1;ctx.font=`900 ${fontSize}px system-ui`;}ctx.translate(sign.x,sign.y);ctx.fillText(label,0,0,Math.max(10,sign.sc*2.65));ctx.restore()}
  for(const lamp of [{x:-2.8,z:1.2},{x:0,z:1.2},{x:2.8,z:1.2},{x:-2.8,z:4.4},{x:2.8,z:4.4}]){const p=proj(lamp.x,3.22,lamp.z);if(p){const r=Math.max(4,Math.min(22,p.sc*.12));const glow=ctx.createRadialGradient(p.x,p.y,1,p.x,p.y,r*3);glow.addColorStop(0,'#fff5c9a8');glow.addColorStop(1,'#ffe7a000');ctx.fillStyle=glow;ctx.fillRect(p.x-r*3,p.y-r*3,r*6,r*6);ctx.fillStyle='#fff1bf';ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*.48,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#b5a57c';ctx.lineWidth=1;ctx.stroke()}}
  for(let x=-4.5;x<=4.5;x+=1.5){poly([[x,1.05,7.98],[x+1.25,1.05,7.98],[x+1.25,2.75,7.98],[x,2.75,7.98]],(Math.round(x*10)%2?'#d9c8a5':'#e3d3b2'),'#b3a080',1)}
  poly([[-5,0,7.9],[5,0,7.9],[5,.18,7.9],[-5,.18,7.9]],'#735b43');
