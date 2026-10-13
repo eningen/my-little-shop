@@ -317,7 +317,6 @@ function finishBusinessDay(){
  }
  sales=0;
  shelves.forEach(s=>{s.stock+=2;shopLevel=Number((shopLevel+.05).toFixed(2));shopValue+=8});
- dailyCustomerTarget=getDailyCustomerTarget();
  update();
  say('🌙 22:00 閉店！ 売上精算・商品補充完了。スポンサー収入 +¥'+sponsorIncome+(debtMessage?' · '+debtMessage:''));
  storeClosed=true;closingUntil=performance.now()+1800;storeMinutes=22*60;
