@@ -305,12 +305,11 @@ function drawMallWorld(){
  const mallFloors={marble:'#e8e8e1',tile:'#9fc4c6',wood:'#a97950',neon:'#273c56'},mallWalls={modern:'#d7e6df',marble:'#d7d3cd',wood:'#78563f',neon:'#243b59',garden:'#9ebfa4'};
  const wallColor=mallWalls[mallWallTheme]||mallWalls.modern,floorColor=mallFloors[mallFloorTheme]||mallFloors.marble;
  poly([[-30,0,-2],[30,0,-2],[30,0,49],[-30,0,49]],floorColor,'#202a28',3);
- poly([[-30,0,-2],[-30,6,-2],[-30,6,49],[-30,0,49]],wallColor,'#35443e',2);
- poly([[30,0,-2],[30,0,49],[30,6,49],[30,6,-2]],wallColor,'#35443e',2);
+ for(let z=-2;z<49;z+=4){const z2=Math.min(49,z+4);poly([[-30,0,z],[-30,6,z],[-30,6,z2],[-30,0,z2]],wallColor,'#35443e',2);poly([[30,0,z],[30,0,z2],[30,6,z2],[30,6,z]],wallColor,'#35443e',2);}
  poly([[-30,0,49],[-30,6,49],[30,6,49],[30,0,49]],wallColor,'#35443e',2);
  poly([[-30,0,-2],[30,0,-2],[30,6,-2],[-30,6,-2]],wallColor,'#35443e',2);
  for(let z=1;z<49;z+=3.2){line3([-29.97,.08,z],[-29.97,5.8,z],mallWallTheme==='neon'?'#54e8ff':'#ffffff77',mallWallTheme==='neon'?2:1);line3([29.97,.08,z],[29.97,5.8,z],mallWallTheme==='neon'?'#54e8ff':'#ffffff77',mallWallTheme==='neon'?2:1);}
- line3([-29.9,.09,-1.9],[-29.9,.09,48.9],'#151a18',7);line3([29.9,.09,-1.9],[29.9,.09,48.9],'#151a18',7);line3([-29.9,.09,48.9],[29.9,.09,48.9],'#151a18',7);line3([-29.9,.09,-1.9],[29.9,.09,-1.9],'#151a18',7);
+ for(let z=-1.8;z<49;z+=3){const z2=Math.min(48.9,z+3);line3([-29.9,.09,z],[-29.9,.09,z2],'#151a18',7);line3([29.9,.09,z],[29.9,.09,z2],'#151a18',7);}line3([-29.9,.09,48.9],[29.9,.09,48.9],'#151a18',7);line3([-29.9,.09,-1.9],[29.9,.09,-1.9],'#151a18',7);
  for(let z=0;z<49;z+=2.5)line3([-30,.012,z],[30,.012,z],mallFloorTheme==='neon'?'#48cfe055':'#52675b55',1);for(let x=-30;x<=30;x+=2.5)line3([x,.012,-2],[x,.012,49],mallFloorTheme==='neon'?'#48cfe055':'#52675b55',1);
  if(mallFloorTheme==='tile'){for(let z=1;z<49;z+=5)line3([-30,.02,z],[30,.02,z],'#f1ffff88',2);for(let x=-30;x<=30;x+=5)line3([x,.02,-2],[x,.02,49],'#f1ffff88',2);}
  if(mallFloorTheme==='wood'){for(let x=-30;x<=30;x+=1.1)line3([x,.025,-2],[x,.025,49],'#593a2855',1.5);}
